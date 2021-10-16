@@ -62,6 +62,11 @@ function manage_brigtness {
     if [[ "$SET_BIGHT" -gt "$MAX_BRIGHT" ]]; then
         SET_BIGHT="$MAX_BRIGHT"
     fi
+    # If we're goint to set it to the same thing, may as well not set it at all
+    if [[ "$CUR_BRIGHTNESS" -eq "$SET_BIGHT" ]]; then
+	return
+    fi
+
     set_brightness "$SET_BIGHT"
     LAST_BRIGHTNESS="$SET_BIGHT"
     LAST_LL="$LIGHT_LEVEL"
