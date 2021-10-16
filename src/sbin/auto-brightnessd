@@ -125,7 +125,11 @@ function write_config {
 
 function main {
     read_config
-    write_config
+
+    echo "MAX_BRIGHT: $MAX_BRIGHT"
+    echo "MIN_BRIGHT: $MIN_BRIGHT"
+    echo "MAX_DISPLAY_AT_LL: $MAX_DISPLAY_AT_LL"
+    echo "ADAPT_TO_USER: $ADAPT_TO_USER"
 
     while IFS='$\n' read -r line; do
         case "$line" in
