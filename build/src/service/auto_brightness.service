@@ -1,0 +1,13 @@
+[Unit]
+Description=Automatic Brightness Adjustment based on light sensor
+After=iio-sensor-proxy.service
+Wants=iio-sensor-proxy.service
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/auto_brightness
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=graphical.target
