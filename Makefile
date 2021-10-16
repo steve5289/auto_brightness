@@ -4,7 +4,7 @@ SRC=./src
 BUILD=./build
 BUILD_SBIN=${BUILD}/sbin
 BUILD_SERVICE=${BUILD}/service
-BUILD_CONF=${BUILD_SERVICE}/etc
+BUILD_CONF=${BUILD}/etc
 
 SBINDIR=/usr/local/sbin
 SERVICE_DIR=/usr/lib/systemd/system
