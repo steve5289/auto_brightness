@@ -98,11 +98,20 @@ function refactor_brightness {
 }
 
 function read_config {
-    if [[ -r  "$CONF_FILE" ]]; then
-        source "$CONF_FILE"
+    if [[ -z "$CONF_FILE" ]]; then
+        echo "CONF_FILE not defined!"
+	return
     fi
+    if [[ ! -f "$CONF_FILE" ]]; then
+        return
+    fi
+    source "$CONF_FILE"
 }
 function write_config {
+    if [[ -z "$CONF_FILE" ]]; then
+        echo "CONF_FILE not defined!"
+	return
+    fi
     echo "" > $CONF_FILE
     echo "MIN_BRIGHT='$MIN_BRIGHT'" >> $CONF_FILE
     echo "MAX_DISPLAY_AT_LL='$MAX_DISPLAY_AT_LL'" >> $CONF_FILE
