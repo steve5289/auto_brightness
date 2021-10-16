@@ -4,6 +4,7 @@ BRIGHTNESS_DEVICE="/sys/class/backlight/backlight-dsi"
 MAX_BRIGHT=$(cat ${BRIGHTNESS_DEVICE}/max_brightness)
 PROG=$(basename $0)
 
+
 MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
@@ -58,20 +59,20 @@ function manage_brigtness {
     local LL_PER_OF_MAX=$(( $LIGHT_LEVEL * 100 / $MAX_DISPLAY_AT_LL ))
     BRIGHT_MOD=$(( $MAX_BRIGHT - $MIN_BRIGHT ))
 
-    SET_BIGHT=$(( $LL_PER_OF_MAX * $BRIGHT_MOD / 100 + $MIN_BRIGHT ))
-    if [[ "$SET_BIGHT" -gt "$MAX_BRIGHT" ]]; then
-        SET_BIGHT="$MAX_BRIGHT"
+    SET_BRIGHT=$(( $LL_PER_OF_MAX * $BRIGHT_MOD / 100 + $MIN_BRIGHT ))
+    if [[ "$SET_BRIGHT" -gt "$MAX_BRIGHT" ]]; then
+        SET_BRIGHT="$MAX_BRIGHT"
     fi
     # If we're goint to set it to the same thing, may as well not set it at all
-    if [[ "$CUR_BRIGHTNESS" -eq "$SET_BIGHT" ]]; then
+    if [[ "$CUR_BRIGHTNESS" -eq "$SET_BRIGHT" ]]; then
 	return
     fi
 
-    set_brightness "$SET_BIGHT"
-    LAST_BRIGHTNESS="$SET_BIGHT"
+    set_brightness "$SET_BRIGHT"
+    LAST_BRIGHTNESS="$SET_BRIGHT"
     LAST_LL="$LIGHT_LEVEL"
     echo "Light Level changed to: $LIGHT_LEVEL"
-    echo "Set Brightness to: $SET_BIGHT"
+    echo "Set Brightness to: $SET_BRIGHT"
 }
 
 function refactor_brightness {
