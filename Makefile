@@ -10,7 +10,7 @@ SBINDIR=/usr/local/sbin
 SERVICE_DIR=/usr/lib/systemd/system
 CONFDIR=/etc
 
-all:
+all: clean
 	cp -ar src build
 	sed -i 's|%SBINDIR%|${SBINDIR}|g' ${BUILD_SERVICE}/${NAME}.service
 	sed -i 's|%NAME%|${NAME}|g' ${BUILD_SERVICE}/${NAME}.service
