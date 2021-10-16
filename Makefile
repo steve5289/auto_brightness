@@ -27,11 +27,15 @@ install:
 	chmod 444 "${SERVICE_DIR}/${NAME}.service"
 	chmod 644 "${CONFDIR}/${NAME}d.conf"
 	systemctl daemon-reload || true
+	sudo systemctl enable auto-brightness
+	sudo systemctl start auto-brightness
 
 uninstall:
+	sudo systemctl disable auto-brightness
+	sudo systemctl stop auto-brightness
+
 	rm -f "${SBINDIR}/${NAME}d"
 	rm -f "${SERVICE_DIR}/${NAME}.service"
-	rm -f "${CONFDIR}/${NAME}d.conf"
 	systemctl daemon-reload || true
 
 clean: 
