@@ -1,0 +1,68 @@
+#!/bin/bash
+
+BRIGHTNESS_DEVICE="/sys/class/backlight/backlight-dsi"
+SYS_MAX_BRIGHT=$(cat ${BRIGHTNESS_DEVICE}/max_brightness)
+MAX_BRIGHT="$SYS_MAX_BRIGHT"
+MIN_BRIGHT=50
+
+MAX_DISPLAY_AT_LL=4000000
+
+
+
+if [[ "$1" != "-r" ]]; then
+    monitor-sensor | bash -x $0 -r
+    exit $?
+fi
+
+
+function get_brightness {
+    OUTPUT=$(cat ${BRIGHTNESS_DEVICE}/brightness)
+}
+
+function set_brightness {
+    local NEW_BRIGHT="$1"
+    if [[ "$NEW_BRIGHT" -gt "$MAX_BRIGHT" ]]; then
+        NEW_BRIGHT="$MAX_BRIGHT"
+    fi
+    if [[ "$NEW_BRIGHT" -lt "$MIN_BRIGHT" ]]; then
+        NEW_BRIGHT="$MIN_BRIGHT"
+    fi
+    echo "$NEW_BRIGHT" > ${BRIGHTNESS_DEVICE}/brightness
+}
+
+function get_max_brightness {
+    OUTPUT=$(cat ${BRIGHTNESS_DEVICE}/max_brightness)
+}
+
+function display_on {
+    return $(cat ${BRIGHTNESS_DEVICE}/bl_power )
+}
+
+function manage_brigtness {
+    local LIGHT_LEVEL="$1"
+    display_on
+    local ON="$OUTPUT"
+
+    get_brightness
+    local CUR_BRIGHTNESS="$OUTPUT"
+    
+    local LL_PER_OF_MAX=$(( $LIGHT_LEVEL * 100 / $MAX_DISPLAY_AT_LL ))
+    BRIGHT_MOD=$(( $MAX_BRIGHT - $MIN_BRIGHT ))
+
+    SET_BIGHT=$(( $LL_PER_OF_MAX * $BRIGHT_MOD / 100 + $MIN_BRIGHT ))
+    set_brightness "$SET_BIGHT"
+}
+
+while IFS='$\n' read -r line; do
+    case "$line" in
+        *"Light changed:"*)
+            LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
+            manage_brigtness "$LIGHT_LEVEL"
+	;;
+        "=== Has ambient light sensor"*)
+            LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
+            manage_brigtness "$LIGHT_LEVEL"
+	;;
+    esac
+done
+
