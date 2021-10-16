@@ -25,11 +25,13 @@ install:
 	chmod 555 "${SBINDIR}/${NAME}d"
 	chmod 444 "${SERVICE_DIR}/${NAME}.service"
 	chmod 644 "${CONFDIR}/${NAME}.conf"
+	systemctl daemon-reload || true
 
 uninstall:
 	rm -f "${SBINDIR}/${NAME}d"
 	rm -f "${SERVICE_DIR}/${NAME}.service"
 	rm -f "${CONFDIR}/${NAME}.conf"
+	systemctl daemon-reload || true
 
 clean: 
 	rm -rf "${BUILD}"
