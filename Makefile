@@ -22,16 +22,16 @@ install:
 
 	cp "$(BUILD_SBIN)/${NAME}d" "${SBINDIR}/"
 	cp "${BUILD_SERVICE}/${NAME}.service" "${SERVICE_DIR}/"
-	cp "${BUILD_CONF}/${NAME}.conf" "${CONFDIR}/"
+	cp "${BUILD_CONF}/${NAME}d.conf" "${CONFDIR}/"
 	chmod 555 "${SBINDIR}/${NAME}d"
 	chmod 444 "${SERVICE_DIR}/${NAME}.service"
-	chmod 644 "${CONFDIR}/${NAME}.conf"
+	chmod 644 "${CONFDIR}/${NAME}d.conf"
 	systemctl daemon-reload || true
 
 uninstall:
 	rm -f "${SBINDIR}/${NAME}d"
 	rm -f "${SERVICE_DIR}/${NAME}.service"
-	rm -f "${CONFDIR}/${NAME}.conf"
+	rm -f "${CONFDIR}/${NAME}d.conf"
 	systemctl daemon-reload || true
 
 clean: 
