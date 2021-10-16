@@ -88,6 +88,7 @@ function refactor_brightness {
     if [[ $LL -eq 0 ]]; then
         MIN_BRIGHT="$NEW_BRIGHT"
         echo "Set min Brightness to: $NEW_BRIGHT"
+    	write_config
         return
     fi
     
@@ -110,6 +111,7 @@ function write_config {
 
 function main {
     read_config
+    write_config
 
     while IFS='$\n' read -r line; do
         case "$line" in
