@@ -69,8 +69,17 @@ function manage_brigtness {
     fi
 
     set_brightness "$SET_BRIGHT"
-    LAST_BRIGHTNESS="$SET_BRIGHT"
-    LAST_LL="$LIGHT_LEVEL"
+    # If the display it not on when we set the brightness level, unset last, as 
+    # this value doesn't always take and we don't want this to think the user 
+    # changed due to that.
+    if [[ "$DISPLAY_ON" -eq 0 ]]; then
+        LAST_BRIGHTNESS="$SET_BRIGHT"
+        LAST_LL="$LIGHT_LEVEL"
+    else
+        LAST_BRIGHTNESS=""
+        LAST_LL=""
+    fi
+    
     echo "Light Level changed to: $LIGHT_LEVEL"
     echo "Set Brightness to: $SET_BRIGHT"
 }
