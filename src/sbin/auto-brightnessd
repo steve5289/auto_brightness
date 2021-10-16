@@ -112,10 +112,9 @@ function write_config {
         echo "CONF_FILE not defined!"
 	return
     fi
-    echo "" > $CONF_FILE
-    echo "MIN_BRIGHT='$MIN_BRIGHT'" >> $CONF_FILE
-    echo "MAX_DISPLAY_AT_LL='$MAX_DISPLAY_AT_LL'" >> $CONF_FILE
-    echo "ADAPT_TO_USER='$ADAPT_TO_USER'" >> $CONF_FILE
+    sed -i "s/^MIN_BRIGHT=/MIN_BRIGHT='$MIN_BRIGHT'/g" "$CONF_FILE"
+    sed -i "s/^MAX_DISPLAY_AT_LL=/MAX_DISPLAY_AT_LL='$MAX_DISPLAY_AT_LL'/g" "$CONF_FILE"
+    sed -i "s/^ADAPT_TO_USER=/ADAPT_TO_USER='$ADAPT_TO_USER'/g" "$CONF_FILE"
 }
 
 function main {
