@@ -98,7 +98,7 @@ function refactor_brightness {
         return
     fi
     
-    MAX_DISPLAY_AT_LL=$(( $LL * 100 / ($NEW_BRIGHT * 100 / $SYS_MAX_BRIGHT ) ))
+    MAX_DISPLAY_AT_LL=$(( $LL * 100 / ($NEW_BRIGHT * 100 / $MAX_BRIGHT ) ))
     echo "Set max display at LL to: $MAX_DISPLAY_AT_LL"
     write_config
 }
