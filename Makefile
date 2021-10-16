@@ -13,6 +13,7 @@ CONFDIR=/etc
 all:
 	cp -ar src build
 	sed -i 's|%SBINDIR%|${SBINDIR}|g' ${BUILD_SERVICE}/${NAME}.service
+	sed -i 's|%NAME%|${NAME}|g' ${BUILD_SERVICE}/${NAME}.service
 	
 install:
 	mkdir -p "${SBINDIR}"

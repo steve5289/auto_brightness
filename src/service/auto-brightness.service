@@ -5,7 +5,7 @@ Wants=iio-sensor-proxy.service
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/auto_brightness
+ExecStart=%SBINDIR%/%NAME%d
 Restart=on-failure
 RestartSec=42s
 
