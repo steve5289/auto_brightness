@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BRIGHTNESS_DEVICE="/sys/class/backlight/backlight-dsi"
-MAX_BRIGHT=$(cat ${BRIGHTNESS_DEVICE}/max_brightness)
+
 PROG=$(basename $0)
 
 
@@ -34,8 +34,16 @@ function set_brightness {
     echo "$NEW_BRIGHT" > ${BRIGHTNESS_DEVICE}/brightness
 }
 
-function get_max_brightness {
-    OUTPUT=$(cat ${BRIGHTNESS_DEVICE}/max_brightness)
+function setup {
+    if [[ -d /sys/class/backlight/backlight-dsi ]]; then
+        BRIGHTNESS_DEVICE=/sys/class/backlight/backlight-dsi
+    elif [[ /sys/class/backlight/backlight ]]; then
+        BRIGHTNESS_DEVICE=/sys/class/backlight/backlight
+    else
+        echo "Error! Could not find mechanism to adjust acreen brightness... Exiting." 1>&2
+        exit 1
+    fi
+    MAX_BRIGHT=$(cat ${BRIGHTNESS_DEVICE}/max_brightness)
 }
 
 function display_on {
@@ -135,6 +143,7 @@ function write_config {
 }
 
 function main {
+    setup
     read_config
 
     echo "MAX_BRIGHT: $MAX_BRIGHT"
