@@ -1,4 +1,4 @@
-# auto_brightness
+# Auto Brightness Daemon
 Automatically adjust brightness based on light level detection
 
 ## LEGAL
