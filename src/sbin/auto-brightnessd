@@ -9,6 +9,7 @@ MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
 ADAPATION_TIME=4
+DEBUG=1
 
 CONF_FILE="/etc/$PROG.conf"
 
@@ -17,7 +18,11 @@ TARGET_BRIGHTNESS=()
 
 
 if [[ "$1" != "-r" ]]; then
-    monitor-sensor | $0 -r
+    if [[ "$DEBUG" -ne 0 ]]; then
+        monitor-sensor | $0 -r
+    else
+        monitor-sensor | bash -x $0 -r
+    fi
     exit $?
 fi
 
