@@ -19,9 +19,9 @@ TARGET_BRIGHTNESS=()
 
 if [[ "$1" != "-r" ]]; then
     if [[ "$DEBUG" -ne 0 ]]; then
-        monitor-sensor | $0 -r
-    else
         monitor-sensor | bash -x $0 -r
+    else
+        monitor-sensor | $0 -r
     fi
     exit $?
 fi
