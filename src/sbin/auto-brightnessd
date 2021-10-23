@@ -55,18 +55,6 @@ function display_on {
 
 function determine_needed_brightness {
     local LIGHT_LEVEL="$1"
-    display_on
-    local DISPLAY_ON="$OUTPUT"
-
-    get_brightness
-    local CUR_BRIGHTNESS="$OUTPUT"
-    
-    if [[ -n "$LAST_BRIGHTNESS" && "$DISPLAY_ON" -eq 0 ]]; then
-        if [[ "$CUR_BRIGHTNESS" -ne "$LAST_BRIGHTNESS" ]]; then
-            refactor_brightness "$LAST_BRIGHTNESS" "$CUR_BRIGHTNESS" "$LAST_LL"
-        fi
-    fi
-
     local LL_PER_OF_MAX=$(( $LIGHT_LEVEL * 100 / $MAX_DISPLAY_AT_LL ))
     BRIGHT_MOD=$(( $MAX_BRIGHT - $MIN_BRIGHT ))
 
@@ -77,21 +65,6 @@ function determine_needed_brightness {
     # If we're goint to set it to the same thing, may as well not set it at all
     if [[ "$CUR_BRIGHTNESS" -eq "$SET_BRIGHT" ]]; then
 	return
-    fi
-
-
-    # Check that this actually got set 
-    get_brightness
-    local CUR_BRIGHTNESS="$OUTPUT"
-    if [[ "$CUR_BRIGHTNESS" -eq "$SET_BRIGHT" ]]; then
-        LAST_BRIGHTNESS="$SET_BRIGHT"
-        LAST_LL="$LIGHT_LEVEL"
-        echo "Light Level changed to: $LIGHT_LEVEL"
-        echo "Set Brightness to: $SET_BRIGHT"
-    else
-        echo "Failed to set brightness"
-        LAST_BRIGHTNESS=""
-        LAST_LL=""
     fi
 }
 
@@ -134,6 +107,7 @@ function set_target_brightness {
         unset TARGET_BRIGHTNESS[0]
         unset TARGET_BR_TIME[0]
     done
+
 }
 
 function read_config {
@@ -180,7 +154,34 @@ function manage_brightness {
         TOTAL+="$ITEM"
     done
     AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" ))
+
+    display_on
+    local DISPLAY_ON="$OUTPUT"
+
+    get_brightness
+    local CUR_BRIGHTNESS="$OUTPUT"
+    
+    if [[ -n "$LAST_BRIGHTNESS" && "$DISPLAY_ON" -eq 0 ]]; then
+        if [[ "$CUR_BRIGHTNESS" -ne "$LAST_BRIGHTNESS" ]]; then
+            refactor_brightness "$LAST_BRIGHTNESS" "$CUR_BRIGHTNESS" "$LAST_LL"
+        fi
+    fi
+
     set_brightness "$AVG"
+
+    # Check that this actually got set 
+    get_brightness
+    local CUR_BRIGHTNESS="$OUTPUT"
+    if [[ "$CUR_BRIGHTNESS" -eq "$SET_BRIGHT" ]]; then
+        LAST_BRIGHTNESS="$SET_BRIGHT"
+        LAST_LL="$LIGHT_LEVEL"
+        echo "Light Level changed to: $LIGHT_LEVEL"
+        echo "Set Brightness to: $SET_BRIGHT"
+    else
+        echo "Failed to set brightness"
+        LAST_BRIGHTNESS=""
+        LAST_LL=""
+    fi
 }
 
 function main {
