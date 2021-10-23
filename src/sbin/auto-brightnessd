@@ -8,8 +8,11 @@ PROG=$(basename $0)
 MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
+ADAPATION_TIME=4
 
 CONF_FILE="/etc/$PROG.conf"
+
+TARGET_BRIGHTNESS=()
 
 
 
@@ -50,7 +53,7 @@ function display_on {
     OUTPUT=$(cat ${BRIGHTNESS_DEVICE}/bl_power )
 }
 
-function manage_brigtness {
+function determine_needed_brightness {
     local LIGHT_LEVEL="$1"
     display_on
     local DISPLAY_ON="$OUTPUT"
@@ -76,7 +79,6 @@ function manage_brigtness {
 	return
     fi
 
-    set_brightness "$SET_BRIGHT"
 
     # Check that this actually got set 
     get_brightness
@@ -91,7 +93,6 @@ function manage_brigtness {
         LAST_BRIGHTNESS=""
         LAST_LL=""
     fi
-    
 }
 
 function refactor_brightness {
@@ -122,6 +123,19 @@ function refactor_brightness {
     write_config
 }
 
+function set_target_brightness {
+    local SET_BRIGHT="$1"
+    TARGET_BRIGHTNESS+=( "$SET_BRIGHT" )
+    TARGET_BR_TIME+=( $(date +%s) )
+
+    local NOW=$(date +%s)
+
+    while [[ $(("$NOW" - "$TARGET_BR_TIME[0]" )) -gt "$ADAPATION_TIME" ]]; do
+        unset TARGET_BRIGHTNESS[0]
+        unset TARGET_BR_TIME[0]
+    done
+}
+
 function read_config {
     if [[ -z "$CONF_FILE" ]]; then
         echo "CONF_FILE not defined!"
@@ -142,6 +156,33 @@ function write_config {
     sed -i "s/^ADAPT_TO_USER=.*$/ADAPT_TO_USER='$ADAPT_TO_USER'/g" "$CONF_FILE"
 }
 
+function process_sensor_line {
+    line=$1
+    case "$line" in
+        *"Light changed:"*)
+            LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
+            manage_brigtness "$LIGHT_LEVEL"
+        ;;
+        "=== Has ambient light sensor"*)
+            LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
+            manage_brigtness "$LIGHT_LEVEL"
+        ;;
+    esac
+}
+
+function manage_brightness {
+    local TOTAL=0
+    local ITEM TOTAL AVG
+    if [[ -z "$TARGET_BRIGHTNESS" ]]; then
+        return
+    fi
+    for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
+        TOTAL+="$ITEM"
+    done
+    AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" ))
+    set_brightness "$AVG"
+}
+
 function main {
     setup
     read_config
@@ -151,17 +192,18 @@ function main {
     echo "MAX_DISPLAY_AT_LL: $MAX_DISPLAY_AT_LL"
     echo "ADAPT_TO_USER: $ADAPT_TO_USER"
 
-    while IFS='$\n' read -r line; do
-        case "$line" in
-            *"Light changed:"*)
-                LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
-                manage_brigtness "$LIGHT_LEVEL"
-            ;;
-            "=== Has ambient light sensor"*)
-                LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
-                manage_brigtness "$LIGHT_LEVEL"
-            ;;
-        esac
+    local LAST_RUN_TIME=0
+
+    while true; do
+        read -t 1 -r line
+        process_sensor_line "$line"
+
+        # ensure we only run manage_brightness every second and no more
+        CUR_RUN_TIME=$(date +%s)
+        if [[ "$CUR_RUN_TIME" -le "$LAST_RUN_TIME" ]]; then
+            continue
+        fi
+        manage_brightness
     done
 }
 main
