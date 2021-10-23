@@ -161,11 +161,11 @@ function process_sensor_line {
     case "$line" in
         *"Light changed:"*)
             LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
-            manage_brigtness "$LIGHT_LEVEL"
+            determine_needed_brightness "$LIGHT_LEVEL"
         ;;
         "=== Has ambient light sensor"*)
             LIGHT_LEVEL=$(echo "$line" | sed 's/[^0-9]//g' | sed 's/^0//g')
-            manage_brigtness "$LIGHT_LEVEL"
+            determine_needed_brightness "$LIGHT_LEVEL"
         ;;
     esac
 }

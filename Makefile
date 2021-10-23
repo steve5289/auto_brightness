@@ -28,7 +28,7 @@ install:
 	chmod 644 "${CONFDIR}/${NAME}d.conf"
 	systemctl daemon-reload || true
 	sudo systemctl enable auto-brightness
-	sudo systemctl start auto-brightness
+	sudo systemctl restart auto-brightness
 
 uninstall:
 	sudo systemctl disable auto-brightness
