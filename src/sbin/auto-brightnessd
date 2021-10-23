@@ -100,7 +100,7 @@ function set_target_brightness {
 
     local NOW=$(date +%s)
 
-    while [[ $(("$NOW" - "$TARGET_BR_TIME[0]" )) -gt "$ADAPATION_TIME" ]]; do
+    while [[ $(("$NOW" - "${TARGET_BR_TIME[0]}" )) -gt "$ADAPATION_TIME" ]]; do
         unset TARGET_BRIGHTNESS[0]
         unset TARGET_BR_TIME[0]
     done
