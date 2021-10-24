@@ -8,7 +8,7 @@ PROG=$(basename $0)
 MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
-ADAPATION_TIME=4
+ADAPATION_TIME=4000
 DEBUG=0
 
 CONF_FILE="/etc/$PROG.conf"
@@ -103,17 +103,17 @@ function set_target_brightness {
     # we set the last time for brightness to now, as that's when it was last 
     # at that brightness level
     if [[ -n "${TARGET_BR_TIME[@]}" ]]; then
-        TARGET_BR_TIME[-1]=$(date +%s)
+        TARGET_BR_TIME[-1]=$(date +%s%3N)
     fi
 
     TARGET_BRIGHTNESS+=( "$SET_BRIGHT" )
-    TARGET_BR_TIME+=( $(date +%s) )
+    TARGET_BR_TIME+=( $(date +%s%3N) )
 
     prune_target_brightness
 }
 
 function prune_target_brightness {
-    local NOW=$(date +%s)
+    local NOW=$(date +%s%3N)
 
     if [[ "${#TARGET_BR_TIME[@]}" -le 1 ]]; then
         return
@@ -228,13 +228,13 @@ function main {
         process_sensor_line "$line"
 
         # ensure we only run manage_brightness every second and no more
-        CUR_RUN_TIME=$(date +%s)
-        if [[ "$CUR_RUN_TIME" -le "$LAST_RUN_TIME" ]]; then
+        CUR_RUN_TIME=$(date +%s%3N)
+        if [[ $(("$CUR_RUN_TIME" - 1000 )) -le "$LAST_RUN_TIME" ]]; then
             continue
         fi
         prune_target_brightness
         manage_brightness
-        LAST_RUN_TIME=$(date +%s)
+        LAST_RUN_TIME=$(date +%s%3N)
     done
 }
 main
