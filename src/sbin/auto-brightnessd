@@ -28,9 +28,6 @@ case "$1" in
     ;;
 esac
          
-if [[ "$1" != "-r" ]]; then
-fi
-
 
 function get_brightness {
     OUTPUT=$(cat ${BRIGHTNESS_DEVICE}/brightness)
