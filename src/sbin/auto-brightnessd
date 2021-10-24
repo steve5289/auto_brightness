@@ -102,7 +102,7 @@ function set_target_brightness {
     local SET_BRIGHT="$1"
     # we set the last time for brightness to now, as that's when it was last 
     # at that brightness level
-    TARGET_BR_TIME[0]=$(date +%s)
+    TARGET_BR_TIME[-1]=$(date +%s)
 
     TARGET_BRIGHTNESS+=( "$SET_BRIGHT" )
     TARGET_BR_TIME+=( $(date +%s) )
