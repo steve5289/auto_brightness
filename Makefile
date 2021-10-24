@@ -18,7 +18,7 @@ all: deps clean
 	sed -i 's|%VERSION%|${VERSION}|g' "${BUILD_SBIN}/${NAME}d"
 
 deps:
-	bc --version || echo "Required dependancy bc is missing" && false
+	bc --version > /dev/null 2>&1 || bash -c 'echo "bc must be installed!"; exit 1'
 	
 install:
 	mkdir -p "${SBINDIR}"
