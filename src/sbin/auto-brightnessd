@@ -162,7 +162,8 @@ function process_sensor_line {
 
 function manage_brightness {
     local TOTAL=0
-    local ITEM TOTAL AVG SET_BRIGHT TIME START_TIME END_TIME
+    local TOTAL_TIME=0
+    local ITEM  AVG SET_BRIGHT TIME START_TIME END_TIME
     if [[ -z "$TARGET_BRIGHTNESS" ]]; then
         return
     fi
@@ -180,13 +181,14 @@ function manage_brightness {
             END_TIME="${TARGET_BR_TIME[$I+1]}"
         fi
         TIME=$(( $END_TIME - $START_TIME ))
+        TOTAL_TIME=$(( $TOTAL_TIME + $TIME ))
         TOTAL=$(( $TOTAL + ($ITEM * $TIME ) ))
         I=$(( $I + 1 ))
     done
     echo "TOTAL: $TOTAL"
     echo "Count: ${#TARGET_BRIGHTNESS[@]}"
-    echo "TIME: $TIME"
-    AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" / "$ADAPATION_TIME" ))
+    echo "TOTAL_TIME: $TOTAL_TIME"
+    AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" / "$TOTAL_TIME" ))
 
     display_on
     local DISPLAY_ON="$OUTPUT"
