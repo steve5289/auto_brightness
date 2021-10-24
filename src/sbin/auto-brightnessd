@@ -189,7 +189,7 @@ function manage_brightness {
     echo "TOTAL: $TOTAL"
     echo "Count: ${#TARGET_BRIGHTNESS[@]}"
     echo "TOTAL_TIME: $TOTAL_TIME"
-    AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" / "$TOTAL_TIME" ))
+    AVG=$(( "$TOTAL" / "$TOTAL_TIME" ))
 
     display_on
     local DISPLAY_ON="$OUTPUT"
