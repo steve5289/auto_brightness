@@ -102,9 +102,6 @@ function set_target_brightness {
     local SET_BRIGHT="$1"
     # we set the last time for brightness to now, as that's when it was last 
     # at that brightness level
-    if [[ -n "${TARGET_BR_TIME[@]}" ]]; then
-        TARGET_BR_TIME[-1]=$(date +%s%3N)
-    fi
 
     TARGET_BRIGHTNESS+=( "$SET_BRIGHT" )
     TARGET_BR_TIME+=( $(date +%s%3N) )
@@ -115,15 +112,15 @@ function set_target_brightness {
 function prune_target_brightness {
     local NOW=$(date +%s%3N)
 
-    if [[ "${#TARGET_BR_TIME[@]}" -le 1 ]]; then
+    if [[ "${#TARGET_BR_TIME[@]}" -le 2 ]]; then
         return
     fi
     echo "TARGET_BIGHTNESS: ${TARGET_BRIGHTNESS[@]}"
-    while [[ $(("$NOW" - "${TARGET_BR_TIME[0]}" )) -gt "$ADAPATION_TIME" ]]; do
+    while [[ $(("$NOW" - "${TARGET_BR_TIME[1]}" )) -gt "$ADAPATION_TIME" ]]; do
         TARGET_BRIGHTNESS=( "${TARGET_BRIGHTNESS[@]:1}" )
         TARGET_BR_TIME=( "${TARGET_BR_TIME[@]:1}" )
         echo "TARGET_BIGHTNESS: ${TARGET_BRIGHTNESS[@]}"
-        if [[ "${#TARGET_BRIGHTNESS[@]}" -le 1 ]]; then
+        if [[ "${#TARGET_BRIGHTNESS[@]}" -le 2 ]]; then
             return
         fi
     done
@@ -169,12 +166,26 @@ function manage_brightness {
     if [[ -z "$TARGET_BRIGHTNESS" ]]; then
         return
     fi
+    local I=0
     for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
-        TOTAL=$(( $TOTAL + $ITEM ))
+        if [[ $I -eq 0 ]]; then
+            START_TIME=$(($(date +%s%3N) - $ADAPATION_TIME))
+        else
+            START_TIME="${TARGET_BR_TIME[$I]}"
+        fi
+        if [[ $I -ge $(( ${#TARGET_BRIGHTNESS[@]} -1 )) ]]; then
+            END_TIME=$(date +%s%3N)
+        else
+            END_TIME="${TARGET_BR_TIME[$I+1]}"
+        fi
+        TIME=$(( $END_TIME - $START_TIME ))
+        TOTAL=$(( $TOTAL + ($ITEM * $TIME ) ))
+        I=$(( $I + 1 ))
     done
     echo "TOTAL: $TOTAL"
     echo "Count: ${#TARGET_BRIGHTNESS[@]}"
-    AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" ))
+    echo "TIME: $TIME"
+    AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" / "$TIME" ))
 
     display_on
     local DISPLAY_ON="$OUTPUT"
