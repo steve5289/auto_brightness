@@ -169,7 +169,6 @@ function manage_brightness {
         return
     fi
     local I=0
-    set -x
     NOW=$(date +%s%3N)
     for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
         if [[ $I -eq 0 ]]; then
@@ -187,9 +186,6 @@ function manage_brightness {
         TOTAL=$(( $TOTAL + ($ITEM * $TIME ) ))
         I=$(( $I + 1 ))
     done
-    echo "TOTAL: $TOTAL"
-    echo "Count: ${#TARGET_BRIGHTNESS[@]}"
-    echo "TOTAL_TIME: $TOTAL_TIME"
     AVG=$(( "$TOTAL" / "$TOTAL_TIME" ))
 
     display_on
@@ -207,7 +203,6 @@ function manage_brightness {
     SET_BRIGHT="$AVG"
 
     set_brightness "$SET_BRIGHT"
-    set +x
 
     # Check that this actually got set 
     get_brightness
