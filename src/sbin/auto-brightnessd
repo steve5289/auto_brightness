@@ -218,7 +218,7 @@ function main {
     local LAST_RUN_TIME=0
 
     while true; do
-         if [[ "${#TARGET_BRIGHTNESS[@]}" -gt 1 && FAILED_SETTING_BRIGHTNESS -ne 1 ]]; then
+         if [[ "${#TARGET_BRIGHTNESS[@]}" -gt 1 || $FAILED_SETTING_BRIGHTNESS -ne 1 ]]; then
             read -t 1 -r line
         else
             read -r line
