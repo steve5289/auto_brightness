@@ -102,14 +102,16 @@ function set_target_brightness {
     local SET_BRIGHT="$1"
     TARGET_BRIGHTNESS+=( "$SET_BRIGHT" )
     TARGET_BR_TIME+=( $(date +%s) )
+    prune_target_brightness
+}
 
+function prune_target_brightness {
     local NOW=$(date +%s)
 
     while [[ $(("$NOW" - "${TARGET_BR_TIME[0]}" )) -gt "$ADAPATION_TIME" ]]; do
         unset TARGET_BRIGHTNESS[0]
         unset TARGET_BR_TIME[0]
     done
-
 }
 
 function read_config {
@@ -198,7 +200,11 @@ function main {
     local LAST_RUN_TIME=0
 
     while true; do
-        read -t 1 -r line
+         if [[ -n "${TARGET_BRIGHTNESS[@]}" ]]; then
+            read -t 1 -r line
+        else
+            read -r line
+        fi
         process_sensor_line "$line"
 
         # ensure we only run manage_brightness every second and no more
@@ -206,6 +212,7 @@ function main {
         if [[ "$CUR_RUN_TIME" -le "$LAST_RUN_TIME" ]]; then
             continue
         fi
+        prune_target_brightness
         manage_brightness
         LAST_RUN_TIME=$(date +%s)
     done
