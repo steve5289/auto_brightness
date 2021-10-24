@@ -183,7 +183,6 @@ function manage_brightness {
         TOTAL=$(( $TOTAL + ($ITEM * $TIME ) ))
         I=$(( $I + 1 ))
     done
-    set +x
     echo "TOTAL: $TOTAL"
     echo "Count: ${#TARGET_BRIGHTNESS[@]}"
     echo "TIME: $TIME"
@@ -202,14 +201,9 @@ function manage_brightness {
     fi
 
     SET_BRIGHT="$AVG"
-    if [[ "$SET_BRIGHT" -lt $MIN_BRIGHT ]]; then
-        SET_BRIGHT="$MIN_BRIGHT"
-    fi
-    if [[ "$AVG" -gt $MAX_BRIGHT ]]; then
-        SET_BRIGHT="$MAX_BRIGHT"
-    fi
 
     set_brightness "$SET_BRIGHT"
+    set +x
 
     # Check that this actually got set 
     get_brightness
