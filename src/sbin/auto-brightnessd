@@ -108,7 +108,7 @@ function set_target_brightness {
 function prune_target_brightness {
     local NOW=$(date +%s)
 
-    if [[ -z "${TARGET_BR_TIME[@]}" ]]; then
+    if [[ "${#TARGET_BR_TIME[@]}" -eq 0 ]]; then
         return
     fi
     while [[ $(("$NOW" - "${TARGET_BR_TIME[0]}" )) -gt "$ADAPATION_TIME" ]]; do
