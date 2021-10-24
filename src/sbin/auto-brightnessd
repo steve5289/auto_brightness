@@ -9,7 +9,7 @@ MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
 ADAPATION_TIME=4000
-REFRESH_TIME=200
+REFRESH_RATE=200
 DEBUG=0
 
 CONF_FILE="/etc/$PROG.conf"
@@ -19,11 +19,7 @@ TARGET_BRIGHTNESS=()
 
 
 if [[ "$1" != "-r" ]]; then
-    if [[ "$DEBUG" -ne 0 ]]; then
-        monitor-sensor | bash -x $0 -r
-    else
-        monitor-sensor | $0 -r
-    fi
+    monitor-sensor | $0 -r
     exit $?
 fi
 
@@ -116,11 +112,9 @@ function prune_target_brightness {
     if [[ "${#TARGET_BR_TIME[@]}" -le 1 ]]; then
         return
     fi
-    echo "TARGET_BIGHTNESS: ${TARGET_BRIGHTNESS[@]}"
     while [[ $(("$NOW" - "${TARGET_BR_TIME[1]}" )) -gt "$ADAPATION_TIME" ]]; do
         TARGET_BRIGHTNESS=( "${TARGET_BRIGHTNESS[@]:1}" )
         TARGET_BR_TIME=( "${TARGET_BR_TIME[@]:1}" )
-        echo "TARGET_BIGHTNESS: ${TARGET_BRIGHTNESS[@]}"
         if [[ "${#TARGET_BRIGHTNESS[@]}" -le 1 ]]; then
             return
         fi
@@ -226,16 +220,23 @@ function main {
     setup
     read_config
 
-    echo "MAX_BRIGHT: $MAX_BRIGHT"
-    echo "MIN_BRIGHT: $MIN_BRIGHT"
-    echo "MAX_DISPLAY_AT_LL: $MAX_DISPLAY_AT_LL"
-    echo "ADAPT_TO_USER: $ADAPT_TO_USER"
+    if [[ "$DEBUG" -ge 1 ]]; then
+        echo "MAX_BRIGHT: $MAX_BRIGHT"
+        echo "DEBUG: $DEBUG"
+        echo "MIN_BRIGHT: $MIN_BRIGHT"
+        echo "MAX_DISPLAY_AT_LL: $MAX_DISPLAY_AT_LL"
+        echo "ADAPT_TO_USER: $ADAPT_TO_USER"
+    fi
+    if [[ "$DEBUG" -ge 2 ]]; then
+        set -x
+    fi
 
     local LAST_RUN_TIME=0
 
     while true; do
          if [[ "${#TARGET_BRIGHTNESS[@]}" -gt 1 || $FAILED_SETTING_BRIGHTNESS -eq 1 ]]; then
-            read -t .2 -r line
+            local WAIT_IN_SEC=$(echo "$REFRESH_RATE / 1000" | bc -ql | sed 's/\([0-9]\)0*$/\1/g')
+            read -t $WAIT_IN_SEC -r line
         else
             read -r line
         fi
@@ -243,7 +244,7 @@ function main {
 
         # ensure we only run manage_brightness every second and no more
         CUR_RUN_TIME=$(date +%s%3N)
-        if [[ $(("$CUR_RUN_TIME" - 200 )) -le "$LAST_RUN_TIME" ]]; then
+        if [[ $(("$CUR_RUN_TIME" - $REFRESH_RATE )) -le "$LAST_RUN_TIME" ]]; then
             continue
         fi
         prune_target_brightness
