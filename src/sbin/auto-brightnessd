@@ -165,6 +165,8 @@ function manage_brightness {
     for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
         TOTAL+="$ITEM"
     done
+    echo "TOTAL: $TOTAL"
+    echo "Count: ${#TARGET_BRIGHTNESS[@]}"
     AVG=$(( "$TOTAL" / "${#TARGET_BRIGHTNESS[@]}" ))
 
     display_on
