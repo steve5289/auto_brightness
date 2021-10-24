@@ -9,6 +9,7 @@ MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
 ADAPATION_TIME=4000
+REFRESH_TIME=200
 DEBUG=0
 
 CONF_FILE="/etc/$PROG.conf"
@@ -239,7 +240,7 @@ function main {
 
     while true; do
          if [[ "${#TARGET_BRIGHTNESS[@]}" -gt 1 || $FAILED_SETTING_BRIGHTNESS -eq 1 ]]; then
-            read -t 1 -r line
+            read -t .2 -r line
         else
             read -r line
         fi
@@ -247,7 +248,7 @@ function main {
 
         # ensure we only run manage_brightness every second and no more
         CUR_RUN_TIME=$(date +%s%3N)
-        if [[ $(("$CUR_RUN_TIME" - 1000 )) -le "$LAST_RUN_TIME" ]]; then
+        if [[ $(("$CUR_RUN_TIME" - 200 )) -le "$LAST_RUN_TIME" ]]; then
             continue
         fi
         prune_target_brightness
