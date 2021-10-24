@@ -1,4 +1,5 @@
 NAME=auto-brightness
+VERSION=0.1.0
 
 SRC=./src
 BUILD=./build
@@ -10,10 +11,14 @@ SBINDIR=/usr/local/sbin
 SERVICE_DIR=/usr/lib/systemd/system
 CONFDIR=/etc
 
-all: clean
+all: deps clean
 	cp -ar src build
 	sed -i 's|%SBINDIR%|${SBINDIR}|g' ${BUILD_SERVICE}/${NAME}.service
 	sed -i 's|%NAME%|${NAME}|g' ${BUILD_SERVICE}/${NAME}.service
+	sed -i 's|%VERSION%|${VERSION}|g' "${BUILD_SBIN}/${NAME}d"
+
+deps:
+	bc --version || echo "Required dependancy bc is missing" && false
 	
 install:
 	mkdir -p "${SBINDIR}"

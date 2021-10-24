@@ -4,7 +4,7 @@ BRIGHTNESS_DEVICE="/sys/class/backlight/backlight-dsi"
 
 PROG=$(basename $0)
 
-
+VERSION=%VERSION%
 MIN_BRIGHT=50
 MAX_DISPLAY_AT_LL=4000000
 ADAPT_TO_USER=1
@@ -17,10 +17,18 @@ CONF_FILE="/etc/$PROG.conf"
 TARGET_BRIGHTNESS=()
 
 
-
+case "$1" in
+    -V|--version) 
+        echo "$0 v$VERSION"
+        exit 0
+    ;;
+    -r)
+        monitor-sensor | $0 -r
+        exit $?
+    ;;
+esac
+         
 if [[ "$1" != "-r" ]]; then
-    monitor-sensor | $0 -r
-    exit $?
 fi
 
 
