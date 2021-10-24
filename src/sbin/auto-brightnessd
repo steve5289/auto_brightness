@@ -162,7 +162,7 @@ function process_sensor_line {
 
 function manage_brightness {
     local TOTAL=0
-    local ITEM TOTAL AVG
+    local ITEM TOTAL AVG SET_BRIGHT TIME START_TIME END_TIME
     if [[ -z "$TARGET_BRIGHTNESS" ]]; then
         return
     fi
@@ -199,7 +199,15 @@ function manage_brightness {
         fi
     fi
 
-    set_brightness "$AVG"
+    SET_BRIGHT="$AVG"
+    if [[ "$SET_BRIGHT" -lt $MIN_BRIGHT ]]; then
+        SET_BRIGHT="$MIN_BRIGHT"
+    fi
+    if [[ "$AVG" -gt $MAX_BRIGHT ]]; then
+        SET_BRIGHT="$MAX_BRIGHT"
+    fi
+
+    set_brightness "$SET_BRIGHT"
 
     # Check that this actually got set 
     get_brightness
