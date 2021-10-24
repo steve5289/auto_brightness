@@ -167,6 +167,7 @@ function manage_brightness {
         return
     fi
     local I=0
+    set -x
     for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
         if [[ $I -eq 0 ]]; then
             START_TIME=$(($(date +%s%3N) - $ADAPATION_TIME))
@@ -182,6 +183,7 @@ function manage_brightness {
         TOTAL=$(( $TOTAL + ($ITEM * $TIME ) ))
         I=$(( $I + 1 ))
     done
+    set +x
     echo "TOTAL: $TOTAL"
     echo "Count: ${#TARGET_BRIGHTNESS[@]}"
     echo "TIME: $TIME"
