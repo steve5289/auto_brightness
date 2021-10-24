@@ -111,12 +111,14 @@ function prune_target_brightness {
     if [[ "${#TARGET_BR_TIME[@]}" -eq 0 ]]; then
         return
     fi
+    echo "TARGET_BIGHTNESS: ${#TARGET_BR_TIME[@]}"
     while [[ $(("$NOW" - "${TARGET_BR_TIME[0]}" )) -gt "$ADAPATION_TIME" ]]; do
         unset TARGET_BRIGHTNESS[0]
         unset TARGET_BR_TIME[0]
         if [[ "${#TARGET_BR_TIME[@]}" -eq 0 ]]; then
             return
         fi
+        echo "TARGET_BIGHTNESS: ${#TARGET_BR_TIME[@]}"
     done
 }
 
