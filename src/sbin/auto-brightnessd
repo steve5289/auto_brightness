@@ -163,7 +163,7 @@ function manage_brightness {
         return
     fi
     for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
-        TOTAL+="$ITEM"
+        TOTAL=$(( $TOTAL + $ITEM ))
     done
     echo "TOTAL: $TOTAL"
     echo "Count: ${#TARGET_BRIGHTNESS[@]}"
