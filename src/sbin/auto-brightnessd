@@ -11,6 +11,7 @@ ADAPT_TO_USER=1
 ADAPATION_TIME=4000
 REFRESH_RATE=200
 DEBUG=0
+VERBOSE=1
 
 CONF_FILE="/etc/$PROG.conf"
 
@@ -90,16 +91,16 @@ function refactor_brightness {
         return
     fi
 
-    echo "Detected User change to brightness to: $NEW_BRIGHT at light level: $LL"
+    verbose 1 "Detected User change to brightness to: $NEW_BRIGHT at light level: $LL"
     if [[ $LL -eq 0 ]]; then
         MIN_BRIGHT="$NEW_BRIGHT"
-        echo "Set min Brightness to: $NEW_BRIGHT"
+        verbose 1 "Set min Brightness to: $NEW_BRIGHT"
     	write_config
         return
     fi
     
     MAX_DISPLAY_AT_LL=$(( $LL * 100 / ($NEW_BRIGHT * 100 / $MAX_BRIGHT ) ))
-    echo "Set max display at LL to: $MAX_DISPLAY_AT_LL"
+    verbose 1 "Set max display at LL to: $MAX_DISPLAY_AT_LL"
     write_config
 }
 
@@ -212,15 +213,31 @@ function manage_brightness {
     if [[ "$CUR_BRIGHTNESS" -eq "$SET_BRIGHT" ]]; then
         LAST_BRIGHTNESS="$SET_BRIGHT"
         LAST_LL="$LIGHT_LEVEL"
-        echo "Light Level changed to: $LIGHT_LEVEL"
-        echo "Set Brightness to: $SET_BRIGHT"
+        verbose 2 "Light Level changed to: $LIGHT_LEVEL"
+        verbose 2 "Set Brightness to: $SET_BRIGHT"
         LAST_LL=""
         FAILED_SETTING_BRIGHTNESS=0
     else
-        echo "Failed to set brightness"
+        verbose 2 "Failed to set brightness"
         LAST_BRIGHTNESS=""
         LAST_LL=""
         FAILED_SETTING_BRIGHTNESS=1
+    fi
+}
+
+function verbose {
+    LEVEL=$1
+    shift
+    if [[ $LEVEL -ge $VERBOSE ]]; then
+        echo "$@"
+    fi
+}
+
+function debug {
+    LEVEL=$1
+    shift
+    if [[ $LEVEL -ge $DEBUG ]]; then
+        echo "$@"
     fi
 }
 
@@ -228,13 +245,11 @@ function main {
     setup
     read_config
 
-    if [[ "$DEBUG" -ge 1 ]]; then
-        echo "MAX_BRIGHT: $MAX_BRIGHT"
-        echo "DEBUG: $DEBUG"
-        echo "MIN_BRIGHT: $MIN_BRIGHT"
-        echo "MAX_DISPLAY_AT_LL: $MAX_DISPLAY_AT_LL"
-        echo "ADAPT_TO_USER: $ADAPT_TO_USER"
-    fi
+    debug 1 "MAX_BRIGHT: $MAX_BRIGHT"
+    debug 1 "DEBUG: $DEBUG"
+    debug 1 "MIN_BRIGHT: $MIN_BRIGHT"
+    debug 1 "MAX_DISPLAY_AT_LL: $MAX_DISPLAY_AT_LL"
+    debug 1 "ADAPT_TO_USER: $ADAPT_TO_USER"
     if [[ "$DEBUG" -ge 2 ]]; then
         set -x
     fi
