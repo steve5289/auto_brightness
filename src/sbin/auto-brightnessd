@@ -112,7 +112,7 @@ function set_target_brightness {
 function prune_target_brightness {
     local NOW=$(date +%s%3N)
 
-    if [[ "${#TARGET_BR_TIME[@]}" -le 2 ]]; then
+    if [[ "${#TARGET_BR_TIME[@]}" -le 1 ]]; then
         return
     fi
     echo "TARGET_BIGHTNESS: ${TARGET_BRIGHTNESS[@]}"
@@ -120,7 +120,7 @@ function prune_target_brightness {
         TARGET_BRIGHTNESS=( "${TARGET_BRIGHTNESS[@]:1}" )
         TARGET_BR_TIME=( "${TARGET_BR_TIME[@]:1}" )
         echo "TARGET_BIGHTNESS: ${TARGET_BRIGHTNESS[@]}"
-        if [[ "${#TARGET_BRIGHTNESS[@]}" -le 2 ]]; then
+        if [[ "${#TARGET_BRIGHTNESS[@]}" -le 1 ]]; then
             return
         fi
     done
@@ -241,7 +241,7 @@ function main {
     local LAST_RUN_TIME=0
 
     while true; do
-         if [[ "${#TARGET_BRIGHTNESS[@]}" -gt 2 || $FAILED_SETTING_BRIGHTNESS -eq 1 ]]; then
+         if [[ "${#TARGET_BRIGHTNESS[@]}" -gt 1 || $FAILED_SETTING_BRIGHTNESS -eq 1 ]]; then
             read -t 1 -r line
         else
             read -r line
