@@ -23,6 +23,9 @@ case "$1" in
         exit 0
     ;;
     -r)
+        true
+    ;;
+    *)
         monitor-sensor | $0 -r
         exit $?
     ;;
