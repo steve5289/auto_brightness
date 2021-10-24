@@ -169,14 +169,15 @@ function manage_brightness {
     fi
     local I=0
     set -x
+    NOW=$(date +%s%3N)
     for ITEM in "${TARGET_BRIGHTNESS[@]}"; do
         if [[ $I -eq 0 ]]; then
-            START_TIME=$(($(date +%s%3N) - $ADAPATION_TIME))
+            START_TIME=$(($NOW - $ADAPATION_TIME))
         else
             START_TIME="${TARGET_BR_TIME[$I]}"
         fi
         if [[ $I -ge $(( ${#TARGET_BRIGHTNESS[@]} -1 )) ]]; then
-            END_TIME=$(date +%s%3N)
+            END_TIME=$NOW
         else
             END_TIME="${TARGET_BR_TIME[$I+1]}"
         fi
