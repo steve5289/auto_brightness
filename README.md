@@ -22,3 +22,7 @@ Run the following:
 ```
 sudo make uninstall
 ```
+
+## Configuration
+
+The config file is located in /etc/auto-brightnessd.conf, to allow one to adjust a variety of settings on how it handles the brightness level.
